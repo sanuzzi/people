@@ -1,0 +1,5 @@
+profile: service
+defaultPackage: com.dates
+---
+testFramework: spek
+sourceLanguage: kotlin
