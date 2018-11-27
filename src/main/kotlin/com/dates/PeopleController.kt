@@ -2,7 +2,13 @@ package com.dates
 
 import io.micronaut.http.HttpStatus
 import io.micronaut.http.annotation.*
+import io.micronaut.validation.Validated
+import javax.validation.Valid
+import javax.validation.constraints.NotBlank
+import javax.validation.constraints.NotNull
+import javax.validation.constraints.Positive
 
+@Validated
 @Controller("/people")
 class PeopleController {
 
@@ -12,7 +18,7 @@ class PeopleController {
         return HttpStatus.OK
     }
 
-    @Get("/hola") // TODO: Se asume que es JSON a pesar del texto?
+    @Get("/hola")
     fun hola(): String {
         return "Hola!!"
     }
@@ -29,18 +35,18 @@ class PeopleController {
     }
 
     @Delete("/{id}")
-    fun save(id: Long) { // TODO: Se asume status OK?
+    fun save(id: Long) {
         peopleService.delete(id)
     }
 
     // Parte 3, recibiendo bodies (con header)
     @Post("/")
-    fun save(@Body person: Person) { // TODO: Se asume status OK?
+    fun save(@Body @Valid person: Person) {
         peopleService.save(person)
     }
 
     @Put("/{id}") // Acá nos empezamos a replantear cosas, ya que tiene sentido mandar el ID por un lado y en el cuerpo solo los datos
-    fun update(id: Long, @Body person: Person) { // TODO: Se asume status OK?
+    fun update(id: Long, @Body @Valid person: Person) {
         peopleService.update(person)
     }
 }
@@ -70,9 +76,22 @@ object peopleService {
     }
 
     fun update(person: Person){
-        this.delete(person.id)
+        this.delete(person.id!!)
         this.save(person)
     }
 }
 
-class Person(val id: Long, val dni: Long, val name: String)
+// Re feo, no se aprovecha la gracia de Kotlin aún
+class Person{
+    @NotNull @Positive var id: Long? = null
+    @NotNull @Positive var dni: Long? = null
+    @NotBlank var name: String? = null
+
+    constructor() {} // Solo lo ponemos porque lo vamos a usar en un rato con la base de datos. El conversor de jsons usa lo de abajo
+
+    constructor(id: Long, dni: Long, name: String) {
+        this.id = id
+        this.dni = dni
+        this.name = name
+    }
+}
