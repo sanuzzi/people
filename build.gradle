@@ -24,7 +24,6 @@ dependencyManagement {
 }
 
 dependencies {
-    annotationProcessor "io.micronaut:micronaut-inject-java:1.0.1"
     compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.13'
     compile "io.micronaut:micronaut-http-client"
     compile "io.micronaut.configuration:micronaut-jdbc-hikari"
